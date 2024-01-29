@@ -1,0 +1,50 @@
+@startuml
+
+' Entities
+class Person {
+    +uuid.UUID ID
+    +string Name
+    +int Age
+}
+
+class Item {
+    +uuid.UUID ID
+    +string Name
+    +string Description
+}
+
+' Value Objects
+class Transaction {
+    -int amount
+    -uuid.UUID from
+    -uuid.UUID to
+    -time.Time createdAt
+}
+
+' Aggregates
+class Customer {
+    -Person *person
+    -Item[] *products
+    -Transaction[] transactions
+}
+
+' Repositories
+interface CustomerRepository {
+    +Get(uuid.UUID) Customer
+    +Add(Customer) error
+    +Update(Customer) error
+}
+
+' Services
+class OrderService {
+    -CustomerRepository customers
+}
+
+' Relationships
+Person "1" -- "*" Customer : contains >
+Item "1" -- "*" Customer : contains >
+Transaction "1" -- "*" Customer : contains >
+CustomerRepository ..> Customer : uses >
+OrderService ..> CustomerRepository : uses >
+
+@enduml
